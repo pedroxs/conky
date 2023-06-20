@@ -11,7 +11,11 @@ function usage() {
 function get_quotes() {
   case $1 in
     usd_brl)
-      curl -s 'https://www.remessaonline.com.br/api/pricing?area=19&converted=2200&currency=1&id_currency_store=1&id_operation_type=3&operationType=1&quantity=4500&reverse=false&total_value=22000' | jq -r '.trading_quotation | tostring[0:5]'
+      curl 'https://simulator-api.remessaonline.com.br/v1/simulator' \
+        -H 'authorization: 5b50b3f1cadc2f622d286a85da9ab85d' \
+        -H 'content-type: application/json;charset=UTF-8' \
+        --data-raw '{"targetCustomerType":"individual","amount":5000,"operationType":"outbound","inputCurrencyISOCode":"BRL","outputCurrencyISOCode":"USD","requestor":"www.remessaonline.com.br"}' \
+        --compressed -s | jq '.simulation.vet * 100 | round / 100'
       ;;
     btc_brl)
       curl -s 'https://www.mercadobitcoin.net/api/BTC/ticker' | jq '.ticker.last | tonumber/1000' | awk {' printf "%.3f",$1 '}
